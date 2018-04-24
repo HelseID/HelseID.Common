@@ -146,8 +146,8 @@ namespace HelseId.Common.Clients
             var payload = new
             {
                 token,
-                assertion?.client_assertion,
-                assertion?.client_assertion_type
+                client_assertion = assertion?.Assertion,
+                client_assertion_type = assertion?.AssertionType
             };
 
             return payload;

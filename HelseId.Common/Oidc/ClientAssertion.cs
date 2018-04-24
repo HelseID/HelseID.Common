@@ -9,10 +9,9 @@ namespace HelseId.Common.Oidc
 {
     public class ClientAssertion
     {
-        [JsonProperty("client_assertion")] public string client_assertion { get; set; }
+        public string Assertion { get; set; }
 
-        [JsonProperty("client_assertion_type")]
-        public string client_assertion_type { get; set; } = OidcConstants.ClientAssertionTypes.JwtBearer;
+        public string AssertionType { get; set; } = OidcConstants.ClientAssertionTypes.JwtBearer;
 
         public static ClientAssertion CreateWithRsaKeys(string clientId, string tokenEndpointUrl)
         {
@@ -21,7 +20,7 @@ namespace HelseId.Common.Oidc
             var assertion = JwtGenerator.Generate(clientId, tokenEndpointUrl, JwtGenerator.SigningMethod.RsaSecurityKey,
                 securityKey);
 
-            return new ClientAssertion {client_assertion = assertion};
+            return new ClientAssertion { Assertion = assertion };
         }
 
         public static ClientAssertion CreateWithEnterpriseCertificate(string clientId, string tokenEndpointUrl,
@@ -32,7 +31,7 @@ namespace HelseId.Common.Oidc
             var assertion = JwtGenerator.Generate(clientId, tokenEndpointUrl,
                 JwtGenerator.SigningMethod.X509EnterpriseSecurityKey, securityKey);
 
-            return new ClientAssertion {client_assertion = assertion};
+            return new ClientAssertion { Assertion = assertion };
         }
     }
 }
