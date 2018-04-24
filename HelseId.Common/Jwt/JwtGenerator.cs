@@ -4,7 +4,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using HelseId.Common.Crypto;
 using HelseId.Common.Extensions;
 using IdentityModel;
 using Microsoft.IdentityModel.Tokens;
@@ -15,21 +14,32 @@ namespace HelseId.Common.Jwt
     {
         public enum SigningMethod
         {
-            None, X509SecurityKey, RsaSecurityKey, X509EnterpriseSecurityKey
-        };
+            None,
+            X509SecurityKey,
+            RsaSecurityKey,
+            X509EnterpriseSecurityKey
+        }
 
-        public static List<string> ValidAudiences = new List<string> { "https://localhost:44366/connect/token", "https://helseid-sts.utvikling.nhn.no", "https://helseid-sts.test.nhn.no", "https://helseid-sts.utvikling.nhn.no" };
         private const double DefaultExpiryInHours = 10;
 
+        public static List<string> ValidAudiences = new List<string>
+        {
+            "https://localhost:44366/connect/token",
+            "https://helseid-sts.utvikling.nhn.no",
+            "https://helseid-sts.test.nhn.no",
+            "https://helseid-sts.utvikling.nhn.no"
+        };
+
         /// <summary>
-        /// 
+        ///     This methods generates a client assertion jwt as specified in https://tools.ietf.org/html/rfc7523
         /// </summary>
-        /// <param name="clientId"></param>
-        /// <param name="tokenEndpoint"></param>
+        /// <param name="clientId">The client Id used as sub</param>
+        /// <param name="tokenEndpoint">The token endpoint used as aud</param>
         /// <param name="signingMethod">Indicate which method to use when signing the Jwt Token</param>
-        /// <param name="securityKey"></param>
-        /// <param name="securityAlgorithm"></param>
-        public static string Generate(string clientId, string tokenEndpoint, SigningMethod signingMethod, SecurityKey securityKey, string securityAlgorithm)
+        /// <param name="securityKey">The security key to sign the assertion with</param>
+        /// <returns>A client assertion jwt in compact serialization format.</returns>
+        public static string Generate(string clientId, string tokenEndpoint, SigningMethod signingMethod,
+            SecurityKey securityKey)
         {
             if (clientId.IsNullOrEmpty())
                 throw new ArgumentException("clientId can not be empty or null");
@@ -37,28 +47,15 @@ namespace HelseId.Common.Jwt
             if (tokenEndpoint.IsNullOrEmpty())
                 throw new ArgumentException("The token endpoint address can not be empty or null");
 
-            if (securityKey ==null)
+            if (securityKey == null)
                 throw new ArgumentException("The security key can not be null");
-
-            if (securityAlgorithm.IsNullOrEmpty())
-                throw new ArgumentException("The security algorithm can not be empty or null");
-
-            return GenerateJwt(clientId, tokenEndpoint, null, signingMethod, securityKey, securityAlgorithm);
+            return GenerateJwt(clientId, tokenEndpoint, null, signingMethod, securityKey);
         }
 
-        /// <summary>
-        /// Generates a new JWT
-        /// </summary>
-        /// <param name="clientId">The OAuth/OIDC client ID</param>
-        /// <param name="audience">The Authorization Server (STS)</param>
-        /// <param name="expiryDate">If value is null, the default expiry date is used (10 hrs)</param>
-        /// <param name="signingMethod"></param>
-        /// <param name="securityKey"></param>
-        /// <param name="securityAlgorithm"></param>
-        /// <returns></returns>
-        private static string GenerateJwt(string clientId, string audience, DateTime? expiryDate, SigningMethod signingMethod, SecurityKey securityKey, string securityAlgorithm) //SigningMethod signingMethod, SigningCredentials signingCredentials = null)
-        {            
-            var signingCredentials = new SigningCredentials(securityKey, securityAlgorithm);
+        private static string GenerateJwt(string clientId, string audience, DateTime? expiryDate,
+            SigningMethod signingMethod, SecurityKey securityKey)
+        {
+            var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.RsaSha512);
 
             var jwt = CreateJwtSecurityToken(clientId, audience + "", expiryDate, signingCredentials);
 
@@ -70,7 +67,7 @@ namespace HelseId.Common.Jwt
             return tokenHandler.WriteToken(jwt);
         }
 
-        public static void UpdateJwtHeader(SecurityKey key, JwtSecurityToken token)
+        private static void UpdateJwtHeader(SecurityKey key, JwtSecurityToken token)
         {
             if (key is X509SecurityKey x509Key)
             {
@@ -107,25 +104,25 @@ namespace HelseId.Common.Jwt
             var x5c = new List<string>();
             var chain = GetCertificateChain(certificate);
             if (chain != null)
-            {
                 foreach (var cert in chain.ChainElements)
                 {
-                    var x509base64 = Convert.ToBase64String(cert.Certificate.RawData);
-                    x5c.Add(x509base64);
+                    var x509Base64 = Convert.ToBase64String(cert.Certificate.RawData);
+                    x5c.Add(x509Base64);
                 }
-            }
+
             return x5c;
         }
 
         private static X509Chain GetCertificateChain(X509Certificate2 cert)
         {
-            X509Chain certificateChain = X509Chain.Create();
+            var certificateChain = X509Chain.Create();
             certificateChain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
             certificateChain.Build(cert);
             return certificateChain;
         }
 
-        private static JwtSecurityToken CreateJwtSecurityToken(string clientId, string audience, DateTime? expiryDate, SigningCredentials signingCredentials)
+        private static JwtSecurityToken CreateJwtSecurityToken(string clientId, string audience, DateTime? expiryDate,
+            SigningCredentials signingCredentials)
         {
             var exp = new DateTimeOffset(expiryDate ?? DateTime.Now.AddHours(DefaultExpiryInHours));
 
@@ -136,33 +133,10 @@ namespace HelseId.Common.Jwt
                 new Claim(JwtClaimTypes.JwtId, Guid.NewGuid().ToString("N"))
             };
 
-            var token = new JwtSecurityToken(clientId, audience, claims, DateTime.Now, DateTime.Now.AddHours(10), signingCredentials);
+            var token = new JwtSecurityToken(clientId, audience, claims, DateTime.Now, DateTime.Now.AddHours(10),
+                signingCredentials);
 
             return token;
         }
-
-        public static SecurityToken ValidateToken(string token, string validIssuer, string validAudience)
-        {
-            var publicKey = RSAKeyGenerator.GetPublicKeyAsXml();
-
-            var test = RSA.Create();
-            test.FromXmlString(publicKey);
-
-            var securityKey = new RsaSecurityKey(test.ExportParameters(false));
-
-            var handler = new JwtSecurityTokenHandler();
-            var validationParams = new TokenValidationParameters
-            {
-                RequireSignedTokens = true,
-                IssuerSigningKey = securityKey,
-                ValidAudience = validAudience,
-                ValidIssuer = validIssuer
-            };
-
-            var claimsPrincipal = handler.ValidateToken(token, validationParams, out var validatedToken);
-
-            return validatedToken;
-        }        
-
     }
 }
