@@ -13,7 +13,7 @@ namespace HelseId.Common.Extensions
 
             var parts = token.Split('.');
 
-            string partToConvert = parts[1];
+            var partToConvert = parts[1];
             partToConvert = partToConvert.Replace('-', '+');
             partToConvert = partToConvert.Replace('_', '/');
             switch (partToConvert.Length % 4)

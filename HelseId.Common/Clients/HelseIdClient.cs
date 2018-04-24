@@ -18,11 +18,13 @@ namespace HelseId.Common.Clients
     }
 
     /// <summary>
-    /// The HelseIdClient is a specialized client used to handle the extensions made on IdentityServer by HelseId.
-    /// It consists of an implementation of the client assertions by use of RSA-keys or Enterprise Certificates.
-    /// In addition to an implementaition of the token exchange grant type which HelseId supports.
-    /// If one only need standard OAuth and OIDC functionality it is recomended to use the standard clients such as IdentityModel.OidcClient
-    /// and IdentityModel.Client.TokenClient as they provide this functinality and the HelseIdClient uses these internaly anyway.
+    ///     The HelseIdClient is a specialized client used to handle the extensions made on IdentityServer by HelseId.
+    ///     It consists of an implementation of the client assertions by use of RSA-keys or Enterprise Certificates.
+    ///     In addition to an implementaition of the token exchange grant type which HelseId supports.
+    ///     If one only need standard OAuth and OIDC functionality it is recomended to use the standard clients such as
+    ///     IdentityModel.OidcClient
+    ///     and IdentityModel.Client.TokenClient as they provide this functinality and the HelseIdClient uses these internaly
+    ///     anyway.
     /// </summary>
     public class HelseIdClient : IHelseIdClient
     {
@@ -138,7 +140,8 @@ namespace HelseId.Common.Clients
             if (_options.SigningMethod == SigningMethod.RsaSecurityKey)
                 assertion = ClientAssertion.CreateWithRsaKeys(_options.ClientId, disco.TokenEndpoint);
             else if (_options.SigningMethod == SigningMethod.X509EnterpriseSecurityKey)
-                assertion = ClientAssertion.CreateWithEnterpriseCertificate(_options.ClientId, disco.TokenEndpoint, _options.CertificateThumbprint);
+                assertion = ClientAssertion.CreateWithEnterpriseCertificate(_options.ClientId, disco.TokenEndpoint,
+                    _options.CertificateThumbprint);
 
             var payload = new
             {

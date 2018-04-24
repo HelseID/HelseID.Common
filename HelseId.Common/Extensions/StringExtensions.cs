@@ -1,32 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace HelseId.Common.Extensions
 {
     public static class StringExtensions
     {
-        public static bool IsNotNullOrEmpty(this String text)
+        public static bool IsNotNullOrEmpty(this string text)
         {
             return !string.IsNullOrEmpty(text);
         }
 
-        public static bool IsNullOrEmpty(this String text)
+        public static bool IsNullOrEmpty(this string text)
         {
             return string.IsNullOrEmpty(text);
         }
 
-        public static String[] FromSpaceSeparatedToList(this String spaceSeparatedList)
+        public static string[] FromSpaceSeparatedToList(this string spaceSeparatedList)
         {
             return spaceSeparatedList.Split(' ');
         }
 
-        public static string ToSpaceSeparatedList(this List<String> list)
+        public static string ToSpaceSeparatedList(this List<string> list)
         {
             return string.Join(" ", list);
         }
 
-        public static string ToSpaceSeparatedList(this String[] list)
+        public static string ToSpaceSeparatedList(this string[] list)
         {
             return string.Join(" ", list);
         }

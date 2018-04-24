@@ -2,22 +2,23 @@
 using System.Diagnostics;
 using System.Security.Cryptography;
 using HelseId.Common.Extensions;
+using Microsoft.IdentityModel.Tokens;
 
 namespace HelseId.Common.Crypto
 {
     /// <summary>
-    /// 
-    /// For identificators used to set JWS algorithm see: http://self-issued.info/docs/draft-ietf-jose-json-web-algorithms.html#rfc.appendix.A.1
+    ///     For identificators used to set JWS algorithm see:
+    ///     http://self-issued.info/docs/draft-ietf-jose-json-web-algorithms.html#rfc.appendix.A.1
     /// </summary>
     public class RSAKeyGenerator
     {
         private const string KeyName = "HelseId_DCR_Key";
         public const int Size = 4096;
-        public const string JwsAlgorithmName = Microsoft.IdentityModel.Tokens.SecurityAlgorithms.RsaSha512;
+        public const string JwsAlgorithmName = SecurityAlgorithms.RsaSha512;
 
         /// <summary>
-        /// Creates a new RSA key pair, and returns the key as Xml formatted string
-        /// If a key allready exists it will be deleted
+        ///     Creates a new RSA key pair, and returns the key as Xml formatted string
+        ///     If a key allready exists it will be deleted
         /// </summary>
         /// <param name="includePrivateParameters">If true the private parameters will be included in the xml formatted key</param>
         /// <returns></returns>
@@ -39,7 +40,7 @@ namespace HelseId.Common.Crypto
 
             try
             {
-                var creationParameters = new CngKeyCreationParameters()
+                var creationParameters = new CngKeyCreationParameters
                 {
                     ExportPolicy = CngExportPolicies.AllowPlaintextExport,
                     Provider = CngProvider.MicrosoftSoftwareKeyStorageProvider,
@@ -48,7 +49,7 @@ namespace HelseId.Common.Crypto
 
                     Parameters =
                     {
-                        new CngProperty("Length", BitConverter.GetBytes(Size), CngPropertyOptions.None),
+                        new CngProperty("Length", BitConverter.GetBytes(Size), CngPropertyOptions.None)
                     }
                 };
 
@@ -64,10 +65,10 @@ namespace HelseId.Common.Crypto
             }
             catch (Exception e)
             {
-                Debug.WriteLine($"Unable to open CngKey.{Environment.NewLine}{e.Message}{Environment.NewLine}{e.StackTrace}");
+                Debug.WriteLine(
+                    $"Unable to open CngKey.{Environment.NewLine}{e.Message}{Environment.NewLine}{e.StackTrace}");
                 throw new Exception("An error occurred"); //do not rethrow - hide the underlying error
             }
-
         }
 
         public static RSA GetRsa()
@@ -75,7 +76,7 @@ namespace HelseId.Common.Crypto
             try
             {
                 Debug.WriteLine("Trying to open existing CngKey");
-                var cngKey = CngKey.Open(KeyName);                
+                var cngKey = CngKey.Open(KeyName);
 
                 using (cngKey)
                 using (RSA rsa = new RSACng(cngKey))
@@ -85,7 +86,8 @@ namespace HelseId.Common.Crypto
             }
             catch (CryptographicException e)
             {
-                Debug.WriteLine($"Unable to open CngKey.{Environment.NewLine}{e.Message}{Environment.NewLine}{e.StackTrace}");
+                Debug.WriteLine(
+                    $"Unable to open CngKey.{Environment.NewLine}{e.Message}{Environment.NewLine}{e.StackTrace}");
                 throw new Exception("An exception occurred while opening a CngKey");
             }
         }
@@ -105,7 +107,8 @@ namespace HelseId.Common.Crypto
             }
             catch (CryptographicException e)
             {
-                Debug.WriteLine($"Unable to open CngKey.{Environment.NewLine}{e.Message}{Environment.NewLine}{e.StackTrace}");
+                Debug.WriteLine(
+                    $"Unable to open CngKey.{Environment.NewLine}{e.Message}{Environment.NewLine}{e.StackTrace}");
                 throw new Exception("An exception occurred while opening a CngKey");
             }
         }
@@ -120,16 +123,16 @@ namespace HelseId.Common.Crypto
 
                 using (cngKey)
                 using (RSA rsa = new RSACng(cngKey))
-                {                    
+                {
                     return rsa.ToXml(false);
                 }
             }
             catch (CryptographicException e)
             {
-                Debug.WriteLine($"Unable to open CngKey.{Environment.NewLine}{e.Message}{Environment.NewLine}{e.StackTrace}");
+                Debug.WriteLine(
+                    $"Unable to open CngKey.{Environment.NewLine}{e.Message}{Environment.NewLine}{e.StackTrace}");
                 throw new Exception("An exception occurred while opening a CngKey");
             }
-
         }
 
         public static bool KeyExists()
@@ -142,7 +145,8 @@ namespace HelseId.Common.Crypto
             }
             catch (CryptographicException e)
             {
-                Debug.WriteLine($"Unable to open CngKey.{Environment.NewLine}{e.Message}{Environment.NewLine}{e.StackTrace}");
+                Debug.WriteLine(
+                    $"Unable to open CngKey.{Environment.NewLine}{e.Message}{Environment.NewLine}{e.StackTrace}");
                 return false;
             }
         }
@@ -158,10 +162,10 @@ namespace HelseId.Common.Crypto
             catch (CryptographicException e)
             {
                 Debug.WriteLine("Unable to delete CngKey.");
-                Debug.WriteLine($"Unable to open CngKey.{Environment.NewLine}{e.Message}{Environment.NewLine}{e.StackTrace}");
+                Debug.WriteLine(
+                    $"Unable to open CngKey.{Environment.NewLine}{e.Message}{Environment.NewLine}{e.StackTrace}");
                 throw;
             }
         }
-
     }
 }

@@ -10,25 +10,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace HelseId.Common.Jwt
 {
-    public class JwtGenerator
+    public partial class JwtGenerator
     {
-        public enum SigningMethod
-        {
-            None,
-            X509SecurityKey,
-            RsaSecurityKey,
-            X509EnterpriseSecurityKey
-        }
-
         private const double DefaultExpiryInHours = 10;
-
-        public static List<string> ValidAudiences = new List<string>
-        {
-            "https://localhost:44366/connect/token",
-            "https://helseid-sts.utvikling.nhn.no",
-            "https://helseid-sts.test.nhn.no",
-            "https://helseid-sts.utvikling.nhn.no"
-        };
 
         /// <summary>
         ///     This methods generates a client assertion jwt as specified in https://tools.ietf.org/html/rfc7523
@@ -57,11 +41,10 @@ namespace HelseId.Common.Jwt
         {
             var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.RsaSha512);
 
-            var jwt = CreateJwtSecurityToken(clientId, audience + "", expiryDate, signingCredentials);
+            var jwt = CreateJwtSecurityToken(clientId, audience, expiryDate, signingCredentials);
 
             if (signingMethod == SigningMethod.X509EnterpriseSecurityKey)
                 UpdateJwtHeader(securityKey, jwt);
-
 
             var tokenHandler = new JwtSecurityTokenHandler();
             return tokenHandler.WriteToken(jwt);
