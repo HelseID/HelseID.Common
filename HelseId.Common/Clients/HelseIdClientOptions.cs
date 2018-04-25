@@ -53,7 +53,7 @@ namespace HelseId.Common.Clients
                     string.IsNullOrEmpty(CertificateThumbprint))
                     throw new NullReferenceException("CertificateThumprint");
 
-                if (SigningMethod == SigningMethod.RsaSecurityKey && !RSAKeyGenerator.KeyExists())
+                if (SigningMethod == SigningMethod.RsaSecurityKey && !RSAKeyGenerator.KeyExists(ClientId))
                     throw new NullReferenceException("No RSA key found");
 
                 if (string.IsNullOrEmpty(RedirectUri)) throw new NullReferenceException("RedirectUri");

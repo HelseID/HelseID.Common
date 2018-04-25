@@ -12,7 +12,6 @@ namespace HelseId.Common.Crypto
     /// </summary>
     public class RSAKeyGenerator
     {
-        private const string KeyName = "HelseId_DCR_Key";
         public const int Size = 4096;
         public const string JwsAlgorithmName = SecurityAlgorithms.RsaSha512;
 
@@ -20,17 +19,18 @@ namespace HelseId.Common.Crypto
         ///     Creates a new RSA key pair, and returns the key as Xml formatted string
         ///     If a key allready exists it will be deleted
         /// </summary>
+        /// <param name="keyName"></param>
         /// <param name="includePrivateParameters">If true the private parameters will be included in the xml formatted key</param>
         /// <returns></returns>
-        public static string CreateNewKey(bool includePrivateParameters)
+        public static string CreateNewKey(string keyName, bool includePrivateParameters)
         {
             CngKey cngKey;
 
             try
             {
-                cngKey = CngKey.Open(KeyName);
+                cngKey = CngKey.Open(keyName);
                 cngKey.Dispose();
-                DeleteKey();
+                DeleteKey(keyName);
             }
             catch (CryptographicException e)
             {
@@ -54,7 +54,7 @@ namespace HelseId.Common.Crypto
                 };
 
                 Debug.WriteLine("Creating new CngKey");
-                cngKey = CngKey.Create(CngAlgorithm.Rsa, KeyName, creationParameters);
+                cngKey = CngKey.Create(CngAlgorithm.Rsa, keyName, creationParameters);
 
                 using (cngKey)
                 using (RSA rsa = new RSACng(cngKey))
@@ -71,12 +71,12 @@ namespace HelseId.Common.Crypto
             }
         }
 
-        public static RSA GetRsa()
+        public static RSA GetRsa(string keyName)
         {
             try
             {
                 Debug.WriteLine("Trying to open existing CngKey");
-                var cngKey = CngKey.Open(KeyName);
+                var cngKey = CngKey.Open(keyName);
 
                 using (cngKey)
                 using (RSA rsa = new RSACng(cngKey))
@@ -92,12 +92,12 @@ namespace HelseId.Common.Crypto
             }
         }
 
-        public static RSAParameters GetRsaParameters()
+        public static RSAParameters GetRsaParameters(string keyName)
         {
             try
             {
                 Debug.WriteLine("Trying to open existing CngKey");
-                var cngKey = CngKey.Open(KeyName);
+                var cngKey = CngKey.Open(keyName);
 
                 using (cngKey)
                 using (RSA rsa = new RSACng(cngKey))
@@ -114,12 +114,12 @@ namespace HelseId.Common.Crypto
         }
 
 
-        public static string GetPublicKeyAsXml()
+        public static string GetPublicKeyAsXml(string keyName)
         {
             try
             {
                 Debug.WriteLine("Trying to open existing CngKey");
-                var cngKey = CngKey.Open(KeyName);
+                var cngKey = CngKey.Open(keyName);
 
                 using (cngKey)
                 using (RSA rsa = new RSACng(cngKey))
@@ -135,11 +135,11 @@ namespace HelseId.Common.Crypto
             }
         }
 
-        public static bool KeyExists()
+        public static bool KeyExists(string keyName)
         {
             try
             {
-                var key = CngKey.Open(KeyName);
+                var key = CngKey.Open(keyName);
                 key.Dispose();
                 return true;
             }
@@ -151,11 +151,11 @@ namespace HelseId.Common.Crypto
             }
         }
 
-        public static void DeleteKey()
+        public static void DeleteKey(string keyName)
         {
             try
             {
-                var key = CngKey.Open(KeyName);
+                var key = CngKey.Open(keyName);
                 key.Delete();
                 //Delete closes the handle to the key - no need to dispose
             }

@@ -15,7 +15,7 @@ namespace HelseId.Common.Oidc
 
         public static ClientAssertion CreateWithRsaKeys(string clientId, string tokenEndpointUrl)
         {
-            var rsa = RSAKeyGenerator.GetRsaParameters();
+            var rsa = RSAKeyGenerator.GetRsaParameters(clientId);
             var securityKey = new RsaSecurityKey(rsa);
             var assertion = JwtGenerator.Generate(clientId, tokenEndpointUrl, JwtGenerator.SigningMethod.RsaSecurityKey,
                 securityKey);
