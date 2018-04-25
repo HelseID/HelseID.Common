@@ -1,37 +1,36 @@
 # HelseID.Common
 
-## HelseIdClient
+The HelseID.Common repo consists of code to help developers use the extended functionality of HelseID. It is means to be used for inspiration for how to solve some of the more technical aspects, but should not be used uncritically as is. A description of the key components follows:
 
-The HelseIdClient is a specialized client used to handle the extensions made on IdentityServer by HelseId. It consists of an implementation of the client assertions by use of RSA-keys or Enterprise Certificates. And an implementaition of the token exchange grant type which HelseId supports. 
+## Clients
 
-If one only need standard OAuth and OIDC functionality it is recomended to use the standard clients such as IdentityModel.OidcClient and IdentityModel.Client.TokenClient as they provide this functinality and the HelseIdClient uses these internaly anyway.
+The HelseIdClient is a specialized client used to handle the extensions made on IdentityServer by HelseId. It consists of an implementation of the client assertions by use of RSA-keys or Enterprise Certificates. And in addition an implementaition of the token exchange grant type which HelseId supports.
 
-```CSharp
-Task<LoginResult> Login();
-Task<TokenResponse> ClientCredentialsSignIn();
-Task<TokenResponse> AcquireTokenByAuthorizationCodeAsync(string code);
-Task<TokenResponse> AcquireTokenByRefreshToken(string refreshToken);
-Task<TokenResponse> TokenExchange(string accessToken);
-```
-## HelseIdClientOptions
-```CSharp
-public string CertificateThumbprint { get; set; }
-public SigningMethod SigningMethod { get; set; }
-public string PreselectIdp { get; set; }
+If one only need standard OAuth and OIDC functionality it is recomended to use the standard clients such as IdentityModel.OidcClient and IdentityModel.Client.TokenClient as they provide the needed functinality ( HelseIdClient uses these internaly).
 
-public string ClientId { get; set; }
-public string ClientSecret { get; set; }
-public string Scope { get; set; }
-public string RedirectUri { get; set; }
-public string PostLogoutRedirectUri { get; set; }
-public AuthenticationFlow Flow { get; set; };
-```
+## Browser
+
+A OAuth/OIDC-client needs to interact with a browser in order to do an authentication. This folder consists of implementations to handle these interactions with both a system browser or an embedded browser.
+
+## Certificates
+
+Certificates are one of the signing mechanisms for the client assertion. The certificate store implementations helps with extracting a certificate for the windows certificate store based on a thumbprint.
+
+## Crypto
+
+RSA keys are another signing mechanism for the client assertion. The RSAKeyGenerator helps with the management of generating and storing a RSA key.
+
+## Extensions
+
+Helper functionality for common operations on RSAKeys, strings and tokens.
+
+## Client Assertion
+
+Contains the model for creating a client assertion jwt with the required claims.
+
+## Network
+
+Helper functionality related to networking. Such as availability checks for endpoints.
 
 
-## DCR-Client
 
-HelseID provides an API for setting up configuration for Clients and ApiResources. In order to use this API on need a client configuration with the **helseid://scopes/client/dcr** scope. The API is available through the swagger specification on http://helseid-dcr.nhn.no/swagger/ and we recomend using a swagger-generator to create and maintain
-
-
-
-##

@@ -1,7 +1,7 @@
 ﻿using System;
 using HelseId.Common.Crypto;
 using IdentityModel.OidcClient;
-using static HelseId.Common.Jwt.JwtGenerator;
+using static HelseId.Common.ClientAssertion.JwtGenerator;
 
 namespace HelseId.Common.Clients
 {

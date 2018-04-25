@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using IdentityModel.Client;
 
-namespace HelseId.Common.Oidc
+namespace HelseId.Common.Network
 {
     public class OidcDiscoveryHelper
     {

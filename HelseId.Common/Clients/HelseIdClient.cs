@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using HelseId.Common.Browser;
-using HelseId.Common.Oidc;
+using HelseId.Common.Network;
 using IdentityModel.Client;
 using IdentityModel.OidcClient;
-using static HelseId.Common.Jwt.JwtGenerator;
+using static HelseId.Common.ClientAssertion.JwtGenerator;
 
 namespace HelseId.Common.Clients
 {
@@ -136,11 +136,11 @@ namespace HelseId.Common.Clients
 
         private object GetBackChannelExtraParameters(DiscoveryResponse disco, string token = null)
         {
-            ClientAssertion assertion = null;
+            ClientAssertion.ClientAssertion assertion = null;
             if (_options.SigningMethod == SigningMethod.RsaSecurityKey)
-                assertion = ClientAssertion.CreateWithRsaKeys(_options.ClientId, disco.TokenEndpoint);
+                assertion = ClientAssertion.ClientAssertion.CreateWithRsaKeys(_options.ClientId, disco.TokenEndpoint);
             else if (_options.SigningMethod == SigningMethod.X509EnterpriseSecurityKey)
-                assertion = ClientAssertion.CreateWithEnterpriseCertificate(_options.ClientId, disco.TokenEndpoint,
+                assertion = ClientAssertion.ClientAssertion.CreateWithEnterpriseCertificate(_options.ClientId, disco.TokenEndpoint,
                     _options.CertificateThumbprint);
 
             var payload = new
