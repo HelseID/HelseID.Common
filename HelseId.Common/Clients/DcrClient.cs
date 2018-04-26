@@ -1,16 +1,16 @@
-﻿using HelseId.Models.DCR.Api;
-using HelseId.Models.DCR.Client;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using HelseId.Models.DCR.Api;
+using HelseId.Models.DCR.Client;
+using Newtonsoft.Json;
 
 namespace HelseId.Common.Clients
 {
     public class DcrClient
     {
-        private HttpClient _client;
+        private readonly HttpClient _client;
 
         public DcrClient(string uri, string accessToken = "")
         {
@@ -18,7 +18,7 @@ namespace HelseId.Common.Clients
             {
                 BaseAddress = new Uri(uri)
             };
-            if(!string.IsNullOrEmpty(accessToken))
+            if (!string.IsNullOrEmpty(accessToken))
                 _client.SetBearerToken(accessToken);
         }
 
@@ -29,7 +29,7 @@ namespace HelseId.Common.Clients
 
         public async Task<ClientResponse> GetClient(string id)
         {
-            var response = await _client.GetAsync("api/connect/client/register?id="+ id);
+            var response = await _client.GetAsync("api/connect/client/register?id=" + id);
 
             var responseAsJson = await response.Content.ReadAsStringAsync();
             var client = JsonConvert.DeserializeObject<ClientResponse>(responseAsJson);
@@ -64,7 +64,7 @@ namespace HelseId.Common.Clients
 
         public async Task<ApiResourceResponse> GetApi(string id)
         {
-            var response = await _client.GetAsync("api/connect/apiResource/register?id="+ id);
+            var response = await _client.GetAsync("api/connect/apiResource/register?id=" + id);
 
             var responseAsJson = await response.Content.ReadAsStringAsync();
             var api = JsonConvert.DeserializeObject<ApiResourceResponse>(responseAsJson);

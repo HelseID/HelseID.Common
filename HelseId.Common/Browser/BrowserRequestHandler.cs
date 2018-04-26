@@ -7,34 +7,37 @@ using System.Threading.Tasks;
 
 namespace HelseId.Common.Browser
 {
-    public class BrowserRequestHandler: IDisposable
+    public class BrowserRequestHandler : IDisposable
     {
-        const int DefaultTimeout = 60 * 5;
+        private const int DefaultTimeout = 60 * 5;
 
-        private HttpListener Listener { get; }
-
-        TaskCompletionSource<string> _source = new TaskCompletionSource<string>();
+        private readonly TaskCompletionSource<string> _source = new TaskCompletionSource<string>();
 
         public BrowserRequestHandler(string redirectUri)
         {
             if (!redirectUri.EndsWith("/"))
                 redirectUri += "/";
 
-           Listener = new HttpListener();
+            Listener = new HttpListener();
             try
             {
                 Listener.Prefixes.Add(redirectUri);
 
-                Task.Run(async () =>
-                {
-                    await Start();
-                });
+                Task.Run(async () => { await Start(); });
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
                 Environment.Exit(-1);
             }
+        }
+
+        private HttpListener Listener { get; }
+
+        public void Dispose()
+        {
+            Listener.Stop();
+            Listener.Close();
         }
 
         internal async Task Start()
@@ -48,8 +51,7 @@ namespace HelseId.Common.Browser
             var httpctx = await Listener.GetContextAsync();
             await ProcessContext(httpctx);
 
-            
-            
+
             Listener.Stop();
         }
 
@@ -61,12 +63,10 @@ namespace HelseId.Common.Browser
             }
             else if (ctx.Request.HttpMethod == "POST")
             {
-                if (!ctx.Request.ContentType.Equals("application/x-www-form-urlencoded", StringComparison.OrdinalIgnoreCase))
-                {
+                if (!ctx.Request.ContentType.Equals("application/x-www-form-urlencoded",
+                    StringComparison.OrdinalIgnoreCase))
                     ctx.Response.StatusCode = 415;
-                }
                 else
-                {
                     using (var body = ctx.Request.InputStream)
                     {
                         using (var reader = new StreamReader(body, ctx.Request.ContentEncoding))
@@ -75,8 +75,8 @@ namespace HelseId.Common.Browser
                             SetResult(content, ctx);
                         }
                     }
-                }
             }
+
             await OutputResponse(ctx.Response);
         }
 
@@ -108,7 +108,8 @@ namespace HelseId.Common.Browser
 
         private static async Task OutputResponse(HttpListenerResponse response)
         {
-            const string responseString = "<html><head><meta charset=\"UTF-8\"></head><body><h1>Innlogging vellykket :)</h1><h2>Lukk nettleseren for å logge ut.</h2></body></html>";
+            const string responseString =
+                "<html><head><meta charset=\"UTF-8\"></head><body><h1>Innlogging vellykket :)</h1><h2>Lukk nettleseren for å logge ut.</h2></body></html>";
 
             var buffer = Encoding.UTF8.GetBytes(responseString);
 
@@ -117,12 +118,6 @@ namespace HelseId.Common.Browser
             await response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
 
             response.OutputStream.Close();
-        }
-
-        public void Dispose()
-        {
-            Listener.Stop();
-            Listener.Close();
         }
 
         public Task<string> WaitForCallbackAsync(int timeoutInSeconds = DefaultTimeout)

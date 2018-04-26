@@ -1,12 +1,12 @@
-﻿using IdentityModel.OidcClient.Browser;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using IdentityModel.OidcClient.Browser;
 
 namespace HelseId.Common.Browser
 {
     public abstract class Browser : IBrowser
     {
-        private string _redirectUri;
+        private readonly string _redirectUri;
 
         public Browser(string redirectUri)
         {
@@ -22,25 +22,26 @@ namespace HelseId.Common.Browser
                 try
                 {
                     var result = await listener.WaitForCallbackAsync();
-                    if (String.IsNullOrWhiteSpace(result))
-                    {
-                        return new BrowserResult { ResultType = BrowserResultType.UnknownError, Error = "Empty response." };
-                    }
+                    if (string.IsNullOrWhiteSpace(result))
+                        return new BrowserResult
+                        {
+                            ResultType = BrowserResultType.UnknownError,
+                            Error = "Empty response."
+                        };
 
-                    return new BrowserResult { Response = result, ResultType = BrowserResultType.Success };
+                    return new BrowserResult {Response = result, ResultType = BrowserResultType.Success};
                 }
                 catch (TaskCanceledException ex)
                 {
-                    return new BrowserResult { ResultType = BrowserResultType.Timeout, Error = ex.Message };
+                    return new BrowserResult {ResultType = BrowserResultType.Timeout, Error = ex.Message};
                 }
                 catch (Exception ex)
                 {
-                    return new BrowserResult { ResultType = BrowserResultType.UnknownError, Error = ex.Message };
+                    return new BrowserResult {ResultType = BrowserResultType.UnknownError, Error = ex.Message};
                 }
             }
         }
 
         public abstract void OpenBrowser(string url);
-       
     }
 }
