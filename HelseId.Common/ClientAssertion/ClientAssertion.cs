@@ -1,5 +1,4 @@
-﻿using HelseId.Common.Certificates;	
-using HelseId.Common.Crypto;	
+﻿using HelseId.Common.Crypto;	
 using IdentityModel;	
 using Microsoft.IdentityModel.Tokens;	
 	

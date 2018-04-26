@@ -4,7 +4,7 @@ using HelseId.Common.Extensions;
 using IdentityModel.OidcClient;
 using static HelseId.Common.ClientAssertion.JwtGenerator;
 
-namespace HelseId.Common.Clients
+namespace HelseId.Common.Client
 {
     public class HelseIdClientOptions : OidcClientOptions
     {
