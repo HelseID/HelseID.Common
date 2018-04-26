@@ -1,12 +1,22 @@
 ﻿using System;
 using HelseId.Common.Crypto;
+using HelseId.Common.Extensions;
 using IdentityModel.OidcClient;
 using static HelseId.Common.ClientAssertion.JwtGenerator;
 
-namespace HelseId.Common.Clients
+namespace HelseId.Common.Client
 {
     public class HelseIdClientOptions : OidcClientOptions
     {
+        /// <summary>
+        /// Helper property to set scopes by list instead of space sparated string
+        /// </summary>
+        public string[] Scopes
+        {
+            get { return Scope.FromSpaceSeparatedToList(); }
+            set { Scope = value.ToSpaceSeparatedList(); }
+        }
+
         /// <summary>
         ///     The thumbprint of the certificate to use for client assertion.
         /// </summary>

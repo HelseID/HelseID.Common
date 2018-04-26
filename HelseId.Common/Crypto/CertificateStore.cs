@@ -2,7 +2,7 @@
 using System.Security.Cryptography.X509Certificates;
 using HelseId.Common.Extensions;
 
-namespace HelseId.Common.Certificates
+namespace HelseId.Common.Crypto
 {
     public class CertificateStore
     {
@@ -20,7 +20,7 @@ namespace HelseId.Common.Certificates
                 var certificates = certificatesInStore.Find(X509FindType.FindByThumbprint, thumbprint, false);
 
                 if (certificates.Count < 1)
-                    throw new UnknownCertificateThumbprintException(
+                    throw new Exception(
                         $"Did not find any Certificates with the thumbprint: {thumbprint}");
 
                 if (certificates.Count > 1)

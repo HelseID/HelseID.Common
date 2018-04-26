@@ -6,7 +6,7 @@ using IdentityModel.Client;
 using IdentityModel.OidcClient;
 using static HelseId.Common.ClientAssertion.JwtGenerator;
 
-namespace HelseId.Common.Clients
+namespace HelseId.Common.Client
 {
     public interface IHelseIdClient
     {
