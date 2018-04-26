@@ -2,6 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>0.5.0</Version>
+    <Company>Norsk Helsenett SF</Company>
+    <PackageLicenseUrl>MIT</PackageLicenseUrl>
+    <Description>Common functionality for using HelseID. Includes handling of client assertion, RSA keys and enterprise certificates</Description>
+    <RepositoryUrl>https://github.com/HelseID/HelseID.Common</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
